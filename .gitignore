@@ -1,0 +1,5 @@
+.idea
+shop_api/.idea
+shop_api/*_test
+
+./shop_srvs/.idea
