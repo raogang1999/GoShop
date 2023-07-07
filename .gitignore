@@ -3,3 +3,5 @@ shop_api/.idea
 shop_api/*_test
 
 ./shop_srvs/.idea
+
+./shop_api/user_web/config_debug.yaml

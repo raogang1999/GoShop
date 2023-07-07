@@ -3,3 +3,16 @@ port: 8021
 user_srv:
   host: '127.0.0.1'
   port: 50051
+
+jwt:
+  key: 'FU4kCY4BCE&fhD0xHLnj0WM85lHD^c^E'
+
+sms:
+  key: 'LTAI5t96znQFjpCvpor1o2oa'
+  secret: 'K6v3kUHp9jpidGpbuZJS3xF1sWT9o5'
+  expire: 300
+
+redis:
+  host: '192.168.120.172'
+  port: 6379
+  password: ''
