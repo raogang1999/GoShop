@@ -8,8 +8,8 @@ jwt:
   key: 'FU4kCY4BCE&fhD0xHLnj0WM85lHD^c^E'
 
 sms:
-  key: 'LTAI5t96znQFjpCvpor1o2oa'
-  secret: 'K6v3kUHp9jpidGpbuZJS3xF1sWT9o5'
+  key: 'key'
+  secret: 'secret'
   expire: 300
 
 redis:
