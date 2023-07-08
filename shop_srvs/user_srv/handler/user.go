@@ -9,9 +9,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
-	"shop/user_srv/global"
-	"shop/user_srv/model"
-	"shop/user_srv/proto"
+	"shop_srvs/user_srv/global"
+	"shop_srvs/user_srv/model"
+	"shop_srvs/user_srv/proto"
 	"strings"
 	"time"
 )
@@ -64,6 +64,7 @@ func ModelToResponse(user model.User) proto.UserInfoResponse {
 }
 
 func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*proto.UserListResponse, error) {
+	fmt.Println("获取用户列表....")
 	//获取用户列表
 	var users []model.User
 	result := global.DB.Find(&users)
@@ -74,7 +75,6 @@ func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*pro
 	rsp := &proto.UserListResponse{}
 	rsp.Total = int32(result.RowsAffected)
 	//分页
-
 	global.DB.Scopes(Paginate(int(req.Pn), int(req.PSize))).Find(&users)
 	for _, user := range users {
 		userInfoRsp := ModelToResponse(user)

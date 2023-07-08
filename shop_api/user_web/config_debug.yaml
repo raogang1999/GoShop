@@ -1,18 +1,6 @@
-name: 'user-web'
-port: 8021
-user_srv:
-  host: '127.0.0.1'
-  port: 50051
-
-jwt:
-  key: 'FU4kCY4BCE&fhD0xHLnj0WM85lHD^c^E'
-
-sms:
-  key: 'key'
-  secret: 'secret'
-  expire: 300
-
-redis:
-  host: '192.168.120.172'
-  port: 6379
-  password: ''
+host: '192.168.120.172'
+port: 8848
+namespace: 'd40b017c-f9c5-48e2-b97e-d81ba015a724'
+password: ''
+data_id: 'user-web.json'
+group: 'dev'

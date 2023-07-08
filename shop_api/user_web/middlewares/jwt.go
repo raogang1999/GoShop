@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -14,7 +13,6 @@ import (
 func JWTAuth() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		token := context.Request.Header.Get("x-token")
-		fmt.Println(token)
 		if token == "" {
 			context.JSON(http.StatusUnauthorized, gin.H{
 				"msg": "请登录",

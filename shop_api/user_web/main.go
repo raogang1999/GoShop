@@ -5,9 +5,11 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"shop_api/user_web/global"
 	"shop_api/user_web/initialize"
+	"shop_api/user_web/utils"
 
 	shop_validator "shop_api/user_web/validator"
 )
@@ -22,12 +24,24 @@ func main() {
 	Router := initialize.Routers()
 	//4. 初始化验证器
 	err := initialize.InitTrans("zh")
-
 	if err != nil {
 		panic(err)
 		//zap.S().Errorw("初始化验证器失败", "msg", err.Error())
 	}
+	//5. 初始化srv连接
+	initialize.InitSrvConn()
 
+	//获取可用端口
+	viper.AutomaticEnv()
+	debug := viper.GetBool("SHOP_DEBUG")
+	//希望开发环境是固定端口的
+	if !debug {
+		port, err := utils.GetFreePort()
+		if err == nil {
+			global.ServerConfig.Port = port
+
+		}
+	}
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		_ = v.RegisterValidation("mobile", shop_validator.ValidateMobile)
 		//翻译
@@ -42,7 +56,7 @@ func main() {
 	zap.S().Debugf("启动端口: %d", global.ServerConfig.Port)
 
 	// 启动服务
-	if err := Router.Run(fmt.Sprintf(":%d", global.ServerConfig.Port)); nil != err {
+	if err := Router.Run(fmt.Sprintf("%s:%d", global.ServerConfig.Host, global.ServerConfig.Port)); nil != err {
 		zap.S().Panic("启动失败: ", err.Error())
 	}
 
