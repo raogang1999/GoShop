@@ -1,4 +1,6 @@
 .idea
-
-./user_web/zap_test
-./user_web/viper_test
+user_web/zap_test
+user_web/viper_test
+*.exe
+zap.log
+tmp

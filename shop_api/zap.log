@@ -1,2 +1,0 @@
-{"level":"info","ts":1688626168.6543431,"caller":"zap_log_file/main.go:27","msg":"failed to fetch URL","url":"https://www.baidu.com/","attempt":3,"backoff":1}
-{"level":"info","ts":1688626189.3527224,"caller":"zap_log_file/main.go:28","msg":"failed to fetch URL","url":"https://www.baidu.com/","attempt":3,"backoff":1}
