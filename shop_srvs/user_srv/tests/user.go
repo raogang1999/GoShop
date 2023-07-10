@@ -13,7 +13,7 @@ var conn *grpc.ClientConn
 // 获取userClient
 func Init() {
 	var err error
-	conn, err = grpc.Dial("127.0.0.1:50051", grpc.WithInsecure())
+	conn, err = grpc.Dial("192.168.112.1:3014", grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ func Init() {
 
 func TestFindUserByMobile() {
 	resp, err := userClient.GetUserByMobile(context.Background(), &proto.UserMobileRequest{
-		Mobile: "1888888888",
+		Mobile: "18888888880",
 	})
 	if err != nil {
 		panic(err)

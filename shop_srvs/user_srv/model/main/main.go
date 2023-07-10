@@ -13,7 +13,8 @@ import (
 	"io"
 	"log"
 	"os"
-	"shop/user_srv/model"
+	"shop_srvs/user_srv/model"
+
 	"strings"
 	"time"
 )
