@@ -37,3 +37,8 @@
     protoc --go_out=. --go-grpc_out=. -I="C:\Users\Rao\AppData\Local\JetBrains\GoLand2022.3\protoeditor" -I="proto" .\proto\user.proto   
     ```
 - tests，测试代码
+
+## goods_srv
+商品微服务
+
+![goods_srv.png](assets/goods_srv.png)
