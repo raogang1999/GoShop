@@ -1,0 +1,22 @@
+{
+  "name": "oss-web",
+  "host": "192.168.112.1",
+  "port": 8029,
+  "tags": ["shop","oss","web"],
+  "oss": {
+    "key": " ",
+    "secret": " ",
+    "host": "http://shop-files-gregory.oss-cn-guangzhou.aliyuncs.com",
+    "call_back_url": "https:// . .co/",
+    "upload_dir": "shop-images/"
+  },
+
+  "jwt": {
+    "key": "FU4kCY4BCE&fhD0xHLnj0WM85lHD^c^E"
+  },
+  "consul": {
+    "host": "192.168.120.172",
+    "port": 8500
+  }
+}
+
