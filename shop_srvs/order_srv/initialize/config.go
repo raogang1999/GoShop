@@ -9,7 +9,7 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/vo"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"shop_srvs/goods_srv/global"
+	"shop_srvs/order_srv/global"
 )
 
 // GetEnvInfo 获取环境变量
@@ -22,9 +22,9 @@ func InitConfig() {
 	//从配置文件读取对应的配置
 	debug := GetEnvInfo("SHOP_DEBUG")
 	configFilePrefix := "config"
-	configFileName := fmt.Sprintf("goods_srv/%s-pro.yaml", configFilePrefix)
+	configFileName := fmt.Sprintf("order_srv/%s-pro.yaml", configFilePrefix)
 	if debug {
-		configFileName = fmt.Sprintf("goods_srv/%s-debug.yaml", configFilePrefix)
+		configFileName = fmt.Sprintf("order_srv/%s-debug.yaml", configFilePrefix)
 	}
 	v := viper.New()
 	v.SetConfigFile(configFileName)
@@ -56,8 +56,8 @@ func InitConfig() {
 		NamespaceId:         global.NacosConfig.Namespace, // 如果需要支持多namespace，我们可以创建多个client,它们有不同的NamespaceId。当namespace是public时，此处填空字符串。
 		TimeoutMs:           5000,
 		NotLoadCacheAtStart: true,
-		LogDir:              "goods_srv/tmp/nacos/log",
-		CacheDir:            "goods_srv/tmp/nacos/cache",
+		LogDir:              "tmp/nacos/log",
+		CacheDir:            "tmp/nacos/cache",
 		LogLevel:            "debug",
 	}
 	// 创建动态配置客户端

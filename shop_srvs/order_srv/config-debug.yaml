@@ -1,0 +1,6 @@
+host: '192.168.120.172'
+port: 8848
+namespace: 'dfb45f6e-a140-4daf-8a9c-4e4e650b4dcf'
+password: ''
+data_id: 'order-srv.json'
+group: 'dev'

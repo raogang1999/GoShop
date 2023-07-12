@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+option go_package =".;proto";
+
+//定义商品服务
+service Inventory{
+  //设置库存
+  rpc SetInv(GoodsInvInfo) returns (google.protobuf.Empty);
+  //获取库存
+  rpc InvDetail(GoodsInvInfo) returns (GoodsInvInfo);
+  // 销售，购物车，有事务
+  rpc Sell(SellInfo) returns (google.protobuf.Empty);
+  // 失败，超时归还库存
+  rpc Reback(SellInfo) returns (google.protobuf.Empty);
+
+}
+
+
+message GoodsInvInfo{
+  int32 goodsId =1;
+  int32 num =2;
+}
+
+//购物车商品信息
+message SellInfo{
+  repeated GoodsInvInfo goodsInvInfos =1;
+}
+
