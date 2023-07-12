@@ -4,3 +4,5 @@ user_web/viper_test
 *.exe
 zap.log
 tmp
+
+oss_test

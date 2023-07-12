@@ -29,12 +29,12 @@ func (s *GoodsServer) CategoryBrandList(ctx context.Context, req *proto.Category
 				Name:           categoryBrand.Category.Name,
 				Level:          categoryBrand.Category.Level,
 				IsTab:          categoryBrand.Category.IsTab,
-				ParentCategory: categoryBrand.Category.ParentCategoryID,
+				ParentCategory: *categoryBrand.Category.ParentCategoryID,
 			},
 			Brand: &proto.BrandInfoResponse{
-				Id:   categoryBrand.Brands.ID,
-				Name: categoryBrand.Brands.Name,
-				Logo: categoryBrand.Brands.Logo,
+				Id:   categoryBrand.Brand.ID,
+				Name: categoryBrand.Brand.Name,
+				Logo: categoryBrand.Brand.Logo,
 			},
 		})
 	}
@@ -52,16 +52,16 @@ func (s *GoodsServer) GetCategoryBrandList(ctx context.Context, req *proto.Categ
 	}
 
 	var categoryBrands []model.GoodsCategoryBrand
-	if result := global.DB.Preload("Brands").Where(&model.GoodsCategoryBrand{CategoryID: req.Id}).Find(&categoryBrands); result.RowsAffected > 0 {
+	if result := global.DB.Preload("Brand").Where(&model.GoodsCategoryBrand{CategoryID: req.Id}).Find(&categoryBrands); result.RowsAffected > 0 {
 		brandListResponse.Total = int32(result.RowsAffected)
 	}
 
 	var brandInfoResponses []*proto.BrandInfoResponse
 	for _, categoryBrand := range categoryBrands {
 		brandInfoResponses = append(brandInfoResponses, &proto.BrandInfoResponse{
-			Id:   categoryBrand.Brands.ID,
-			Name: categoryBrand.Brands.Name,
-			Logo: categoryBrand.Brands.Logo,
+			Id:   categoryBrand.Brand.ID,
+			Name: categoryBrand.Brand.Name,
+			Logo: categoryBrand.Brand.Logo,
 		})
 	}
 
@@ -82,7 +82,7 @@ func (s *GoodsServer) CreateCategoryBrand(ctx context.Context, req *proto.Catego
 
 	categoryBrand := model.GoodsCategoryBrand{
 		CategoryID: req.CategoryId,
-		BrandsID:   req.BrandId,
+		BrandID:    req.BrandId,
 	}
 
 	global.DB.Save(&categoryBrand)
@@ -115,7 +115,7 @@ func (s *GoodsServer) UpdateCategoryBrand(ctx context.Context, req *proto.Catego
 	}
 
 	categoryBrand.CategoryID = req.CategoryId
-	categoryBrand.BrandsID = req.BrandId
+	categoryBrand.BrandID = req.BrandId
 
 	global.DB.Save(&categoryBrand)
 

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -59,7 +58,10 @@ func (s *GoodsServer) UpdateBrand(ctx context.Context, req *proto.BrandRequest) 
 	if req.Logo != "" {
 		brands.Logo = req.Logo
 	}
-	fmt.Println(brands)
+	if req.Name != "" {
+		brands.Name = req.Name
+	}
+
 	if result := global.DB.Save(&brands); result.Error != nil {
 		return nil, status.Errorf(codes.Internal, "更新品牌失败")
 	}

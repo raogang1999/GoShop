@@ -8,11 +8,12 @@ package model
 type Category struct {
 	BaseModel
 	Name             string      `gorm:"type:varchar(20);not null;comment:'分类名称,不能为空'" json:"name"`
-	ParentCategoryID int32       `json:"parent"`
-	ParentCategory   *Category   `json:"-"` //忽略
-	SubCategory      []*Category `gorm:"foreignKey:ParentCategoryID;references:ID" json:"sub_category"`
-	Level            int32       `gorm:"type:int;not null;default:1;comment:'分类级别，1，2，3'" json:"level"`
-	IsTab            bool        `gorm:"type:tinyint;default:false;comment:'是否在首页进行tab展示，false不展示，true展示'" json:"is_tab"`
+	ParentCategoryID *int32      `json:"parent"` //解决零值更新问题
+	ParentCategory   *Category   `json:"-"`      //忽略
+	SubCategory      []*Category `gorm:"foreignKey:ParentCategoryID;references:ID;default:NULL" json:"sub_category"`
+
+	Level int32 `gorm:"type:int;not null;default:1;comment:'分类级别，1，2，3'" json:"level"`
+	IsTab bool  `gorm:"type:tinyint;default:false;comment:'是否在首页进行tab展示，false不展示，true展示'" json:"is_tab"`
 }
 
 /*
@@ -36,8 +37,8 @@ type GoodsCategoryBrand struct {
 	CategoryID int32 `gorm:"type:int;index:idx_category_brand;"`
 	Category   Category
 
-	BrandsID int32 `gorm:"type:int;index:idx_category_brand;"`
-	Brands   Brands
+	BrandID int32 `gorm:"type:int;index:idx_category_brand;"`
+	Brand   Brands
 }
 
 func (GoodsCategoryBrand) TableName() string {

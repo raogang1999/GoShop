@@ -1,0 +1,6 @@
+host: '192.168.120.172'
+port: 8848
+namespace: '98f8b80a-3bd9-4798-8e4c-017653214870'
+password: ''
+data_id: 'goods-web.json'
+group: 'dev'

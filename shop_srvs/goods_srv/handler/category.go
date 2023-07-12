@@ -62,7 +62,7 @@ func (s *GoodsServer) GetSubCategory(ctx context.Context, req *proto.CategoryLis
 		Name:           category.Name,
 		Level:          category.Level,
 		IsTab:          category.IsTab,
-		ParentCategory: category.ParentCategoryID,
+		ParentCategory: *category.ParentCategoryID,
 	}
 	var subCategorys []model.Category
 	var subCategoryResponse []*proto.CategoryInfoResponse
@@ -70,14 +70,14 @@ func (s *GoodsServer) GetSubCategory(ctx context.Context, req *proto.CategoryLis
 	if category.Level == 1 {
 		preloads = "SubCategory.SubCategory"
 	}
-	global.DB.Where(&model.Category{ParentCategoryID: req.Id}).Preload(preloads).Find(&subCategorys)
+	global.DB.Where(&model.Category{ParentCategoryID: &req.Id}).Preload(preloads).Find(&subCategorys)
 	for _, subCategory := range subCategorys {
 		subCategoryResponse = append(subCategoryResponse, &proto.CategoryInfoResponse{
 			Id:             subCategory.ID,
 			Name:           subCategory.Name,
 			Level:          subCategory.Level,
 			IsTab:          subCategory.IsTab,
-			ParentCategory: subCategory.ParentCategoryID,
+			ParentCategory: *subCategory.ParentCategoryID,
 		})
 	}
 	categoryListResponse.SubCategorys = subCategoryResponse
@@ -87,21 +87,27 @@ func (s *GoodsServer) GetSubCategory(ctx context.Context, req *proto.CategoryLis
 // 创建商品分类
 func (s *GoodsServer) CreateCategory(ctx context.Context, req *proto.CategoryInfoRequest) (*proto.CategoryInfoResponse, error) {
 	category := model.Category{}
-
 	category.Name = req.Name
 	category.Level = req.Level
 	category.IsTab = req.IsTab
 
+	//cMap := map[string]interface{}{}
+	//cMap["name"] = req.Name
+	//cMap["level"] = req.Level
+	//cMap["is_tab"] = req.IsTab
+	//cMap["add_time"] = time.Now().Format("2006-01-02 15:04:05")
+
 	if req.Level != 1 {
 		//去查询父类目是否存在
-
-		category.ParentCategoryID = req.ParentCategory
+		//cMap["parent_category_id"] = req.ParentCategory
+		category.ParentCategoryID = &req.ParentCategory
 	}
-	if result := global.DB.Save(&category); result.Error != nil {
+
+	if result := global.DB.Model(&model.Category{}).Create(&category); result.Error != nil {
 		return nil, status.Errorf(codes.Internal, "创建商品分类失败")
 	}
 
-	return &proto.CategoryInfoResponse{Id: int32(category.ID)}, nil
+	return &proto.CategoryInfoResponse{Id: category.ID, Name: req.Name, Level: req.Level, IsTab: req.IsTab}, nil
 }
 
 // 删除商品分类
@@ -124,7 +130,9 @@ func (s *GoodsServer) UpdateCategory(ctx context.Context, req *proto.CategoryInf
 		category.Name = req.Name
 	}
 	if req.ParentCategory != 0 {
-		category.ParentCategoryID = req.ParentCategory
+		category.ParentCategoryID = &req.ParentCategory
+	} else {
+		category.ParentCategoryID = nil
 	}
 	if req.Level != 0 {
 		category.Level = req.Level
