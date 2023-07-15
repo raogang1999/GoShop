@@ -66,7 +66,7 @@ func (self *OrderServer) CreateCartItem(ctx context.Context, req *proto.CartItem
 func (self *OrderServer) UpdateCartItem(ctx context.Context, req *proto.CartItemRequest) (*empty.Empty, error) {
 	//更新购物车,更新数量和选中状态，不能小于0
 	var shopCart model.ShoppingCart
-	if result := global.DB.First(&shopCart, req.Id); result.RowsAffected == 0 {
+	if result := global.DB.Where("goods = ? and user = ?", req.GoodsId, req.UserId).First(&shopCart); result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "购物车记录不存在")
 	}
 	shopCart.Checked = req.Checked
@@ -79,7 +79,7 @@ func (self *OrderServer) UpdateCartItem(ctx context.Context, req *proto.CartItem
 
 // 删除购物车
 func (self *OrderServer) DeleteCartItem(ctx context.Context, req *proto.CartItemRequest) (*empty.Empty, error) {
-	if result := global.DB.Delete(&model.ShoppingCart{}, req.Id); result.RowsAffected == 0 {
+	if result := global.DB.Where("goods = ? and user = ?", req.GoodsId, req.UserId).Delete(&model.ShoppingCart{}); result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "购物车记录不存在")
 	}
 	return &empty.Empty{}, nil
@@ -196,7 +196,7 @@ func (self *OrderServer) OrderList(ctx context.Context, req *proto.OrderFilterRe
 	resp := &proto.OrderListResponse{}
 	//关于sql语句拼接问题，如果有问题就改为指针
 	var total int64
-	global.DB.Where(&model.OrderInfo{User: req.UserId}).Count(&total)
+	global.DB.Model(&model.OrderInfo{}).Where(&model.OrderInfo{User: req.UserId}).Count(&total)
 	resp.Total = int32(total)
 
 	//分页
@@ -213,6 +213,7 @@ func (self *OrderServer) OrderList(ctx context.Context, req *proto.OrderFilterRe
 			Address: order.Address,
 			Name:    order.SignerName,
 			Mobile:  order.SignerMobile,
+			AddTime: order.CreatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
 	return resp, nil

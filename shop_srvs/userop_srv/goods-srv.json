@@ -1,0 +1,21 @@
+{
+  "name": "userop_srv",
+  "host": "192.168.112.1",
+  "tags": ["srv","inventory","shop"],
+  "mysql": {
+    "host": "192.168.120.172",
+    "port": 3306,
+    "user": "root",
+    "password": "root",
+    "db": "shop_userop_srv"
+  },
+  "redis":{
+    "host":"192.168.120.172",
+    "port":6379,
+    "password":""
+  },
+  "consul": {
+    "host": "192.168.120.172",
+    "port": 8500
+  }
+}

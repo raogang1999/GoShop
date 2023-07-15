@@ -13,7 +13,7 @@ var orderClient proto.OrderClient
 // 获取userClient
 func Init() {
 	var err error
-	conn, err := grpc.Dial("192.168.112.1:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("192.168.112.1:8039", grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func TestOrderList(t *testing.T) {
 func TestCreateOrder(t *testing.T) {
 	Init()
 	resp, err := orderClient.CreateOrder(context.Background(), &proto.OrderRequest{
-		UserId:  2,
+		UserId:  1,
 		Address: "北京",
 		Name:    "张三",
 		Mobile:  "18888888888",
@@ -65,9 +65,9 @@ func TestOrderDetail(t *testing.T) {
 func TestCreateCartItem(t *testing.T) {
 	Init()
 	resp, err := orderClient.CreateCartItem(context.Background(), &proto.CartItemRequest{
-		UserId:  2,
-		GoodsId: 425,
-		Nums:    2,
+		UserId:  1,
+		GoodsId: 427,
+		Nums:    1,
 	})
 	if err != nil {
 		panic(err)

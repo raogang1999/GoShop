@@ -20,6 +20,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/nacos-group/nacos-sdk-go v1.1.4
 	github.com/redis/go-redis/v9 v9.0.5
+	github.com/smartwalle/alipay/v3 v3.2.14
 	github.com/spf13/viper v1.16.0
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.56.1
@@ -185,6 +186,9 @@ require (
 	github.com/sivchari/containedctx v1.0.2 // indirect
 	github.com/sivchari/nosnakecase v1.7.0 // indirect
 	github.com/sivchari/tenv v1.7.1 // indirect
+	github.com/smartwalle/ncrypto v1.0.2 // indirect
+	github.com/smartwalle/ngx v1.0.6 // indirect
+	github.com/smartwalle/nsign v1.0.8 // indirect
 	github.com/sonatard/noctx v0.0.2 // indirect
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect

@@ -1,0 +1,6 @@
+host: '192.168.120.172'
+port: 8848
+namespace: '84313ad1-0a39-4bee-b61d-199ce320f13e'
+password: ''
+data_id: 'userop-web.json'
+group: 'dev'

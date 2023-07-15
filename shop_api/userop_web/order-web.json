@@ -1,0 +1,25 @@
+{
+  "name": "userop-web",
+  "host": "192.168.112.1",
+  "port": 8025,
+  "tags":["userop","api","web","shop"],
+  "user_srv": {
+    "name": "userop_srv"
+  },
+  "goods_srv":{
+    "name":"goods_srv"
+  },
+  "jwt": {
+    "key": "FU4kCY4BCE&fhD0xHLnj0WM85lHD^c^E"
+  },
+
+  "redis": {
+    "host": "192.168.120.172",
+    "port": 6379,
+    "password": ""
+  },
+  "consul": {
+    "host": "192.168.120.172",
+    "port": 8500
+  }
+}

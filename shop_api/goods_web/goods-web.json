@@ -6,7 +6,7 @@
     "name": "goods_srv"
   },
   "jwt": {
-    "key": "FU4kCY4BCE&fhD0xHLnj0WM85lHD^a^E"
+    "key": "FU4kCY4BCE&fhD0xHLnj0WM85lHD^c^E"
   },
   "consul": {
     "host": "192.168.120.172",
