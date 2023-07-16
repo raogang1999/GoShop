@@ -49,12 +49,12 @@ func TestGetGoodsDetail(t *testing.T) {
 func TestCreateGoods(t *testing.T) {
 	Init()
 	rsp, err := brandClient.CreateGoods(context.Background(), &proto.CreateGoodsInfo{
-		Name:            "测试商品",
+		Name:            "测试商品ES",
 		GoodsSn:         "123456",
 		Stocks:          54,
 		MarketPrice:     99,
 		ShopPrice:       88,
-		GoodsBrief:      "测试商品",
+		GoodsBrief:      "测试商品ES",
 		GoodsDesc:       "测试商品",
 		ShipFree:        true,
 		Images:          []string{"https://img.alicdn.com/imgextra/i1/2200722652651/O1CN01Q4Q4Qq1YQ1Q8QYQ1Y_!!2200722652651.jpg_430x430q90.jpg"},

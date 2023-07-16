@@ -1,5 +1,12 @@
 package model
 
+import (
+	"context"
+	"gorm.io/gorm"
+	"shop_srvs/goods_srv/global"
+	"strconv"
+)
+
 /*
 1. 分类信息表
 类目级别，1，2，3
@@ -88,4 +95,60 @@ type Goods struct {
 	Images          GormList `gorm:"type:varchar(5000);not null;comment:'商品轮播图'"`
 	DescImages      GormList `gorm:"type:varchar(10000);not null;comment:'商品描述图片'"`
 	GoodsFrontImage string   `gorm:"type:varchar(200);not null;comment:'商品封面图'"`
+}
+
+func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
+	//创建商品的时候，需要创建商品的sku
+	esModel := EsGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandID:     g.BrandID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		GoodsBrief:  g.GoodsBrief,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		ShopPrice:   g.ShopPrice,
+	}
+	_, err = global.EsClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(string(esModel.ID)).Do(context.Background())
+	return
+}
+
+func (g *Goods) AfterUpdate(tx *gorm.DB) (err error) {
+	esModel := EsGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandID:     g.BrandID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		GoodsBrief:  g.GoodsBrief,
+		ShopPrice:   g.ShopPrice,
+	}
+
+	_, err = global.EsClient.Update().Index(esModel.GetIndexName()).
+		Doc(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Goods) AfterDelete(tx *gorm.DB) (err error) {
+	_, err = global.EsClient.Delete().Index(EsGoods{}.GetIndexName()).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }

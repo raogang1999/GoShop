@@ -2,8 +2,10 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/olivere/elastic/v7"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"shop_srvs/goods_srv/global"
@@ -55,33 +57,43 @@ func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterReque
 	var goods []model.Goods
 	localDB := global.DB.Model(model.Goods{})
 
+	//es复合查询
+	q := elastic.NewBoolQuery()
+
 	if req.Keywords != "" {
 		//关键词搜索
 		localDB = localDB.Where("name like ?", "%"+req.Keywords+"%")
+		q.Must(elastic.NewMultiMatchQuery(req.Keywords, "name", "goods_brief"))
+
 	}
 	if req.IsHot {
 		//查询热门
 		localDB = localDB.Where("is_hot = ?", req.IsHot)
+		q.Filter(elastic.NewTermQuery("is_hot", req.IsHot))
 	}
 	if req.IsNew {
 		//查询新品
 		localDB = localDB.Where("is_new = ?", req.IsNew)
+		q.Filter(elastic.NewTermQuery("is_new", req.IsNew))
 	}
 	if req.PriceMin > 0 {
 		//通过价格区间筛选
-		localDB = localDB.Where("shop_price >= ?", req.PriceMin)
+		//localDB = localDB.Where("shop_price >= ?", req.PriceMin)
+		q.Filter(elastic.NewRangeQuery("shop_price").Gte(req.PriceMin))
 	}
 	if req.PriceMax > 0 {
 		//通过价格区间筛选
-		localDB = localDB.Where("shop_price <= ?", req.PriceMax)
+		//localDB = localDB.Where("shop_price <= ?", req.PriceMax)
+		q.Filter(elastic.NewRangeQuery("shop_price").Lte(req.PriceMax))
 	}
 	if req.Brand > 0 {
-		localDB = localDB.Where("brand_id = ?", req.Brand)
+		//localDB = localDB.Where("brand_id = ?", req.Brand)
+		q.Filter(elastic.NewTermQuery("brand_id", req.Brand))
 	}
 	//子查询
 	//通过商品分类筛选
 	var subQuery string
-
+	categoryIds := make([]interface{}, 0)
 	if req.TopCategory > 0 {
 		var category model.Category
 		if result := global.DB.First(&category, req.TopCategory); result.RowsAffected == 0 {
@@ -94,15 +106,44 @@ func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterReque
 		} else if category.Level == 3 {
 			subQuery = fmt.Sprintf("select id from category WHERE id=%d", req.TopCategory)
 		}
-		localDB = localDB.Where(fmt.Sprintf("category_id in (%s)", subQuery))
-
+		type Result struct {
+			Id int32 `json:"id"`
+		}
+		var results []Result
+		global.DB.Raw(subQuery).Pluck("id", &categoryIds).Scan(&results)
+		for _, re := range results {
+			categoryIds = append(categoryIds, re.Id)
+		}
+		// 生成 terms查询
+		q.Filter(elastic.NewTermsQuery("category_id", categoryIds...))
 	}
-	var count int64
-	localDB.Count(&count)
-	goodListRespone.Total = int32(count)
 
-	result := localDB.Preload("Category").Preload("Brand").Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Find(&goods)
-	if result.RowsAffected == 0 {
+	//分页处理
+	if req.Pages == 0 {
+		req.Pages = 1
+	}
+	switch {
+	case req.PagePerNums > 100:
+		req.PagePerNums = 100
+	case req.PagePerNums <= 0:
+		req.PagePerNums = 10
+	}
+
+	result, err := global.EsClient.Search().Index(model.EsGoods{}.GetIndexName()).Query(q).From(int(req.Pages)).Size(int(req.PagePerNums)).Do(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+	goodListRespone.Total = int32(result.Hits.TotalHits.Value)
+	goodsIds := make([]int32, 0)
+	for _, hit := range result.Hits.Hits {
+		goods := model.Goods{}
+		_ = json.Unmarshal(hit.Source, &goods)
+		goodsIds = append(goodsIds, goods.ID) //获取到商品id
+	}
+	//
+	sqlResults := localDB.Preload("Category").Preload("Brand").Find(&goods, goodsIds)
+	if sqlResults.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "商品不存在")
 	}
 	for _, good := range goods {
@@ -163,7 +204,13 @@ func (s *GoodsServer) CreateGoods(ctx context.Context, req *proto.CreateGoodsInf
 	goods.IsNew = req.IsNew
 	goods.IsHot = req.IsHot
 	goods.OnSale = req.OnSale
-	global.DB.Save(&goods)
+	tx := global.DB.Begin()
+	result := tx.Save(&goods)
+	if result.Error != nil {
+		tx.Rollback()
+		return nil, status.Errorf(codes.Internal, "创建商品失败")
+	}
+	tx.Commit()
 	return &proto.GoodsInfoResponse{
 		Id: goods.ID,
 	}, nil
@@ -207,6 +254,14 @@ func (s *GoodsServer) UpdateGoods(ctx context.Context, req *proto.CreateGoodsInf
 	goods.IsNew = req.IsNew
 	goods.IsHot = req.IsHot
 	goods.OnSale = req.OnSale
-	global.DB.Save(&goods)
+
+	tx := global.DB.Begin()
+	result := tx.Save(&goods)
+	if result.Error != nil {
+		tx.Rollback()
+		return nil, status.Errorf(codes.Internal, "更新商品失败")
+	}
+	tx.Commit()
+
 	return &empty.Empty{}, nil
 }

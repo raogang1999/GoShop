@@ -1,0 +1,62 @@
+{
+  "mappings": {
+    "properties": {
+      "brand_id": {
+        "type": "integer"
+      },
+      "category_id": {
+        "type": "integer"
+      },
+      "click_num": {
+        "type": "integer"
+      },
+      "fav_num": {
+        "type": "integer"
+      },
+      "id": {
+        "type": "integer"
+      },
+      "is_hot": {
+        "type": "boolean"
+      },
+      "is_new": {
+        "type": "boolean"
+      },
+      "on_sale": {
+        "type": "boolean"
+      },
+      "ship_free": {
+        "type": "boolean"
+      },
+      "shop_price": {
+        "type": "float"
+      },
+      "sold_num": {
+        "type": "long"
+      },
+      "market_price": {
+        "type": "float"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "goods_brief": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      }
+    }
+  }
+}
